@@ -1,7 +1,6 @@
 # binary training result metrics
 import pandas as pd
 import numpy as np
-from POI_project.support_code import general_func
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc, roc_auc_score
@@ -21,6 +20,15 @@ def preprocess2(df):
     remove_cols=["sp#","win#","bldgI#"]
     preprocessed_df=df.drop(columns=remove_cols,axis=1)
     return preprocessed_df
+
+def select_pid(row_threshold=200):
+    all_df_pd=pd.read_csv("data-cnt-info-will.csv").iloc[:,1:]
+    #print(all_df_pd)
+    #all_df_pd = pd.read_csv("C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\0314\\Data_info.ipynb").iloc[:, 1:]
+    #all_df_pd.head()
+    pid_selected=all_df_pd.loc[all_df_pd['3']>row_threshold,"PID"] #[all_df_pd['3']>row_threshold,"PID"]
+    print(pid_selected)
+    return pid_selected
 
 def initial_balance(df, PIDs, POIs, min_data=200):
     df_balanced = pd.DataFrame(None, columns=df.columns)
@@ -161,7 +169,7 @@ def feature_select_KBest(features, Xtrain_df, Ytrain_df, Xtest_df):
     return X_train, X_test, Top_Rank
 
 
-pid_selected = general_func.select_pid(row_threshold=200)
+pid_selected = select_pid(row_threshold=200)
 feature_count = 20
 pid = 100  # check if i still need this
 classes = [1, 2, 3, 4]  # check if i still need this
@@ -171,7 +179,7 @@ test_IDs = [26, 53, 66, 215, 239, 248, 360, 524]
 target_POIs = [1, 2, 3, 4]
 min_data = 200
 
-# source_data_path="C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\subjects_data_0223" #Chih-You Data with general_func.preprocess
+# source_data_path="C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\subjects_data_0223" #Chih-You Data with _func.preprocess
 # source_data_path="C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\0603Data" #Will Data with general_func.preprocess
 source_data_path = "C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\0603Data\\Clean\\DataCleaner_6_12_output"  # Will Data with general_func.preprocess2
 target_data_path = "C:\\Users\\willi\\PycharmProjects\\Test\\POI_project\\Data\\6_09"
@@ -184,7 +192,7 @@ preprocess_na_df = preprocess2(df)
 print("POI to train list", classes)
 for pid in test_IDs:
     if(pid != 26):
-        df = pd.read_csv(source_data_path + "\\bio_feat_time_4pois_pid" + str(pid) + "clean.csv")
+        df = pd.read_csv("bio_feat_time_4pois_pid" + str(pid) + "clean.csv")
         for column in ["time", "index", "dayOfWeek", "isWorkDay", "snrS", "snrM", "snrC", "snrH"]:
             if (column in df.columns):
                 df = df.drop([column], axis=1)
